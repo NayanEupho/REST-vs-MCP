@@ -94,25 +94,44 @@ call_tool("chat", "Tell me more")
 </tr>
 </table>
 
-### Key Difference
+### Key Difference: Bandwidth Over Time
 
 ```mermaid
-graph LR
-    subgraph REST["REST: Payload Growth"]
-        A1[Turn 1<br/>100 bytes] --> A2[Turn 2<br/>200 bytes]
-        A2 --> A3[Turn 3<br/>300 bytes]
-        A3 --> A4[Turn 10<br/>1000 bytes]
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#ff6b6b','primaryTextColor':'#fff','primaryBorderColor':'#c92a2a','lineColor':'#fab005','secondaryColor':'#51cf66','tertiaryColor':'#fff'}}}%%
+graph TB
+    subgraph REST["🔴 REST API - Linear Growth Problem"]
+        direction LR
+        R1["Turn 1<br/>📦 100 bytes"]:::small
+        R2["Turn 2<br/>📦📦 200 bytes"]:::medium
+        R3["Turn 3<br/>📦📦📦 300 bytes"]:::large
+        R4["Turn 5<br/>📦📦📦📦📦 500 bytes"]:::xlarge
+        R5["Turn 10<br/>📦📦📦📦📦<br/>📦📦📦📦📦 1000 bytes"]:::huge
+        R1 ==> R2 ==> R3 ==> R4 ==> R5
     end
     
-    subgraph MCP["MCP: Constant Size"]
-        B1[Turn 1<br/>100 bytes] --> B2[Turn 2<br/>100 bytes]
-        B2 --> B3[Turn 3<br/>100 bytes]
-        B3 --> B4[Turn 10<br/>100 bytes]
+    subgraph MCP["🟢 MCP - Constant Efficiency"]
+        direction LR
+        M1["Turn 1<br/>📦 100 bytes"]:::constant
+        M2["Turn 2<br/>📦 100 bytes"]:::constant
+        M3["Turn 3<br/>📦 100 bytes"]:::constant
+        M4["Turn 5<br/>📦 100 bytes"]:::constant
+        M5["Turn 10<br/>📦 100 bytes"]:::constant
+        M1 ==> M2 ==> M3 ==> M4 ==> M5
     end
     
-    style REST fill:#ff6b6b
-    style MCP fill:#51cf66
+    classDef small fill:#ffdecc,stroke:#ff6b6b,stroke-width:2px,color:#000
+    classDef medium fill:#ffb3b3,stroke:#ff6b6b,stroke-width:2px,color:#000
+    classDef large fill:#ff9999,stroke:#c92a2a,stroke-width:3px,color:#000
+    classDef xlarge fill:#ff6b6b,stroke:#c92a2a,stroke-width:4px,color:#fff
+    classDef huge fill:#c92a2a,stroke:#a61e1e,stroke-width:5px,color:#fff,font-weight:bold
+    classDef constant fill:#51cf66,stroke:#2f9e44,stroke-width:2px,color:#000
 ```
+
+**📈 Visual Impact:**
+- **REST**: Each message carries the *entire* conversation history → Exponential overhead
+- **MCP**: Each message carries *only* new data → Server maintains state efficiently
+
+> **Real-world impact**: At 100 chat turns, REST transmits **~5MB** vs MCP's **~50KB** (100x difference!)
 
 ---
 
