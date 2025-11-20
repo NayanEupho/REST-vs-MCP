@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+httpx
+matplotlib
+pandas
+numpy
+streamlit
+seaborn
+tabulate
