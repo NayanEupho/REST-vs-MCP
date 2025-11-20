@@ -1,4 +1,4 @@
-# REST vs MCP 2.0: Protocol Benchmark Suite
+# REST vs MCP: Protocol Benchmark Suite
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
