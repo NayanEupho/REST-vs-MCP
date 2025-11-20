@@ -25,25 +25,93 @@ As AI agents become more complex, the method of connecting them to data and tool
 
 ## 📊 Visual Comparison
 
+### Architecture Overview
+
+<table>
+<tr>
+<th width="50%">REST (Stateless)</th>
+<th width="50%">MCP (Stateful)</th>
+</tr>
+<tr>
+<td>
+
+**Request 1:**
+```json
+POST /chat
+{
+  "history": ["Hello"]
+}
+```
+✅ Response
+
+**Request 2:**
+```json
+POST /chat
+{
+  "history": ["Hello", "How are you?"]
+}
+```
+✅ Response *(redundant data re-sent)*
+
+**Request 3:**
+```json
+POST /chat
+{
+  "history": ["Hello", "How are you?", "Tell me more"]
+}
+```
+✅ Response *(growing payload)*
+
+</td>
+<td>
+
+**Initial Connection:**
+```json
+CONNECT /mcp
+SSE Stream Established
+```
+✅ Session ID: `abc123`
+
+**Request 1:**
+```json
+call_tool("chat", "Hello")
+```
+✅ Response
+
+**Request 2:**
+```json
+call_tool("chat", "How are you?")
+```
+✅ Response *(server remembers context)*
+
+**Request 3:**
+```json
+call_tool("chat", "Tell me more")
+```
+✅ Response *(only new data sent)*
+
+</td>
+</tr>
+</table>
+
+### Key Difference
+
 ```mermaid
-sequenceDiagram
-    participant Client
-    participant REST_Server
-    participant MCP_Server
-
-    Note over Client, REST_Server: REST (Stateless)
-    Client->>REST_Server: POST /chat {history: [Msg1]}
-    REST_Server-->>Client: Response
-    Client->>REST_Server: POST /chat {history: [Msg1, Msg2]}
-    REST_Server-->>Client: Response (Redundant Data Sent)
-
-    Note over Client, MCP_Server: MCP (Stateful)
-    Client->>MCP_Server: Connect (Persistent Session)
-    MCP_Server-->>Client: Session ID
-    Client->>MCP_Server: call_tool {msg: Msg1}
-    MCP_Server-->>Client: Response
-    Client->>MCP_Server: call_tool {msg: Msg2}
-    MCP_Server-->>Client: Response (Only New Data Sent)
+graph LR
+    subgraph REST["REST: Payload Growth"]
+        A1[Turn 1<br/>100 bytes] --> A2[Turn 2<br/>200 bytes]
+        A2 --> A3[Turn 3<br/>300 bytes]
+        A3 --> A4[Turn 10<br/>1000 bytes]
+    end
+    
+    subgraph MCP["MCP: Constant Size"]
+        B1[Turn 1<br/>100 bytes] --> B2[Turn 2<br/>100 bytes]
+        B2 --> B3[Turn 3<br/>100 bytes]
+        B3 --> B4[Turn 10<br/>100 bytes]
+    end
+    
+    style REST fill:#ff6b6b
+    style MCP fill:#51cf66
 ```
 
 ---
